@@ -8,8 +8,8 @@ toc: true
   -- SPDX-License-Identifier: AGPL-3.0-or-later
   -->
 
-The language we use is a variant of the [Donkey
-project](https://github.com/linxuanm/donkey)'s, which, in turn, is a
+The language we use is a variant of
+[Donkey](https://github.com/linxuanm/donkey)'s, which, in turn, is a
 well-defined subset of IB Pseudocode.
 
 ## General information
