@@ -1,4 +1,7 @@
-# Informal Pseudocode Specification
+---
+title: Informal Pseudocode Specification
+toc: true
+---
 
 The language we use is a variant of the [Donkey
 project](https://github.com/linxuanm/donkey)'s, which, in turn, is a
