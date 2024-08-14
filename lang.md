@@ -9,6 +9,10 @@ well-defined subset of IB Pseudocode.
 * Tokens are separated via operators or whitespace. Unnecessary whitespace is
   ignored. In this context, whitespaces are tabs (U+0009) or spaces (U+0020).
 * Statements are separated by line feeds (U+000A).
+* On this page, regular expressions are [POSIX extended regular
+  expressions](https://pubs.opengroup.org/onlinepubs/9799919799/basedefs/V1_chap09.html).
+  (We might switch to [ABNF](https://www.rfc-editor.org/rfc/rfc5234.txt) in the
+  future.)
 
 ## Data representation and types
 
