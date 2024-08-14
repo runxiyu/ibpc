@@ -26,8 +26,6 @@ enum ibpc_type_id {
 	IBPC_TYPE_STRING,
 	IBPC_TYPE_BOOLEAN,
 	IBPC_TYPE_LIST,
-	IBPC_TYPE_STACK,
-	IBPC_TYPE_QUEUE,
 };
 
 typedef mpz_t ibpc_type_integer;
@@ -42,23 +40,7 @@ struct ibpc_type_list {
 	struct ibpc_type_list *prev;
 	struct ibpc_type_list *next;
 	struct ibpc_value *data;
-};
-struct ibpc_type_stack {
-	struct ibpc_type_stack *prev;
-	struct ibpc_type_stack *next;
-	struct ibpc_value *data;
-};
-struct ibpc_type_queue {
-	struct ibpc_type_queue *prev;
-	struct ibpc_type_queue *next;
-	struct ibpc_value *data;
-};
-/*
- * FIXME: there's definitely something wrong with those three types but my brain
- * isn't clear enough to deal with types right now. I mean, the why am I
- * defining queue types as queue items? And where's the producer/consumer
- * pointers? (I don't think we need any thread safety though.)
- */
+}; // FIXME
 
 union ibpc_type {
 	ibpc_type_integer integer;
@@ -66,8 +48,6 @@ union ibpc_type {
 	struct ibpc_type_string string;
 	ibpc_type_boolean boolean;
 	ibpc_type_list list;
-	ibpc_type_stack stack;
-	ibpc_type_queue queue;
 };
 
 struct ibpc_value {
