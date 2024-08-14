@@ -17,6 +17,11 @@ well-defined subset of IB Pseudocode.
   (We might switch to [ABNF](https://www.rfc-editor.org/rfc/rfc5234.txt) in the
   future.)
 
+## Comments
+* Block comments begin with `/*` and end with `*/`.
+* Inline comments begin with `//` until a line feed.
+* Comment characters, as specified above, are ignored in string literals.
+
 ## Data representation and types
 
 Since IB Pseudocode is dynamically typed, all values are basically a tagged
@@ -56,7 +61,7 @@ All compound types are passed by reference.
 | Stack | a FILO                                     |                       |                                           |
 | Queue | a FIFO                                     |                       |                                           |
 
-Stacks and queues are a distanttarget to implement.
+Stacks and queues are a distant target to implement.
 
 ## Type conversion functions
 
@@ -93,5 +98,54 @@ Stacks and queues are a distanttarget to implement.
     of the arguments to be converted to strings, concatenated, and written to
     standard output.
 
+## Arithmetic operations
+
+* **`A + B`** evaluates to the sum of `A` and `B`, where `A` and `B` are
+  integers or reals.
+  * If both are of the same type, their original type is returned.
+  * If one is an integer but another is a real, the return type is a real.
+* **`A - B`** evaluates to difference between `A` and `B` by subtracting `B`
+  from `A`, where `A` and `B` are integers or reals.
+  * If both are of the same type, their original type is returned.
+  * If one is an integer but another is a real, the return type is a real.
+  * This may also be used as an unary operator that simply negates B.
+* **`A * B`** evaluates to the product of `A` and `B`, where `A` and `B` are
+  integers or reals.
+  * If both are of the same type, their original type is returned.
+  * If one is an integer but another is a real, the return type is a real.
+* **`A / B`** evaluates to the quotient of `A` divided by `B`, where `A` and `B`
+  are integers or reals. A real is returned.
+* **`A div B`** evaluates to the quotient of `A` divided by `B`, where `A` and
+  `B` are integers or reals. A floored integer is returned.
+* **`A mod B`** or **`A % B`** evaluates to the modulus of `A` divided by `B`,
+  where `A` and `B` are integers or reals. An integer is returned.
+
+The behavior of division functions (`/`, `div`, and `mod`) is undefined when the
+divisor is zero. (Generally speaking, they cause SIGFPE on amd64 and evaluate to
+0 on aarch64, though the underlying C compiler may have optimizations that
+change this. Divison by zero is not recommended as doing so might create
+[nasal demons](http://www.catb.org/jargon/html/N/nasal-demons.html).)
+
+## Comparison operators
+
+All comparison operators evaluate to booleans.
+
+| Form | Description |
+| -------- | ----------- |
+|`A == B`|A is equal to B|
+|`A != B`|A is not equal to B|
+|`A < B`|A is strictly less than B|
+|`A <= B`|A is less than or equal to B|
+|`A > B`|A is strictly greater than B|
+|`A >= B`|A is greater than or equal to B|
+
+* `==` and `!=` work on simple types.
+* `<`, `<=`, `>`, and `>=` only work on integers and reals. Integers and reals
+  may be compared with each other.
+
+## Operator precedence
+
 <!-- vim: tw=80 nowrap
+     Copyright (c) 2024 Runxi Yu
+     Copyright (c) 2024 Runxi Yu
 -->
