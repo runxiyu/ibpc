@@ -13,14 +13,19 @@ inaccessible in my usual workflow. Therefore, I've set out to create a
 pseudocode compiler with much simpler technology, namely:
 
 * [POSIX lex](https://pubs.opengroup.org/onlinepubs/9799919799/utilities/lex.html)
-  for lexing
+  for lexing.
 * [POSIX yacc](https://pubs.opengroup.org/onlinepubs/9799919799/utilities/yacc.html)
-  for parsing
-* Either [QBE](https://c9x.me/compile) as a compiler backend, or transpile to
-  either [Hare](https://harelang.org) or POSIX-compliant C (or, if I'm really in
+  for parsing.
+* Transpile to or POSIX-compliant C.
   a rush, [Lua](https://lua.org) or [CHICKEN Scheme](https://www.call-cc.org/))
-* Preferrably, the ability to use standard debugging environments like
-  [GDB](https://sourceware.org/gdb/) and [rr](https://rr-project.org/)
+* ~~Preferrably, the ability to use standard debugging environments like
+  [GDB](https://sourceware.org/gdb/) and [rr](https://rr-project.org/)~~   
+  This is likely impossible as I'm transpiling to C rather than to QBE/LLVM IL.
+  Some debugging primitives must then be added, such as the ability to print
+  every line of code as they are executed.
+* It should be able to run on musl Linux, glibc Linux, OpenBSD, and FreeBSD.
+  macOS does not implement POSIX.1-2007 or later, but it should not be that hard
+  to port to.
 
 <!-- vim: tw=80
 -->
