@@ -28,7 +28,7 @@ struct ibpc_value {
 | Integer | a whole number          | [GNU GMP](https://gmplib.org) `mpz_t`         | `-?[0-9]+`         |
 | Real    | a floating point number | GNU GMP `mpq_t`                               | `-?[0-9]+\.[0-9]+` |
 | String  | an array of bytes       | a struct with a cap, a size, and `char *data` | `"[^"]*"`          |
-| Boolean | a boolean               | `bool`                                        | `(true|false)`     |
+| Boolean | a boolean               | `bool`                                        | <code>(true&vert;false)</code> |
 
 ### Compound types
 
