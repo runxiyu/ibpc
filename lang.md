@@ -18,7 +18,7 @@ union:
 struct ibpc_value {
 	enum ibpc_type_id type;
 	union ibpc_type value;
-}
+};
 ```
 
 ### Simple types
@@ -28,7 +28,7 @@ struct ibpc_value {
 | Integer | a whole number          | [GNU GMP](https://gmplib.org) `mpz_t`         | `-?[0-9]+`         |
 | Real    | a floating point number | GNU GMP `mpq_t`                               | `-?[0-9]+\.[0-9]+` |
 | String  | an array of bytes       | a struct with a cap, a size, and `char *data` | `"[^"]*"`          |
-| Boolean | a boolean               | C99 `_Bool`                                   | `(true|false)`     |
+| Boolean | a boolean               | `bool`                                        | `(true|false)`     |
 
 ### Compound types
 
@@ -36,7 +36,7 @@ struct ibpc_value {
 | ----  | -----------                                | --------------        | ------------                              |
 | List  | an ordered container for a group of values | a linked list         | `\[\v(,\s*\v)*\]` where `\v` is any value |
 | Stack | a FILO                                     | a linked list         |                                           |
-| Queue | a FIFO                                     | a dynamic ring buffer |                                           |
+| Queue | a FIFO                                     | a linked list         |                                           |
 
 <!-- vim: tw=80 nowrap
 -->

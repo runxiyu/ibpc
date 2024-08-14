@@ -1,0 +1,76 @@
+/*
+ * Types for IB Pseudocode
+ *
+ * Copyright (C) 2024  Runxi Yu <https://runxiyu.org>
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+#include <gmp.h>
+
+enum ibpc_type_id {
+	IBPC_TYPE_INTEGER,
+	IBPC_TYPE_REAL,
+	IBPC_TYPE_STRING,
+	IBPC_TYPE_BOOLEAN,
+	IBPC_TYPE_LIST,
+	IBPC_TYPE_STACK,
+	IBPC_TYPE_QUEUE,
+};
+
+typedef mpz_t ibpc_type_integer;
+typedef mpq_t ibpc_type_real;
+struct ibpc_type_string {
+	ssize_t cap;
+	ssize_t size;
+	char *data;
+};
+typedef bool ibpc_type_boolean;
+struct ibpc_type_list {
+	struct ibpc_type_list *prev;
+	struct ibpc_type_list *next;
+	struct ibpc_value *data;
+};
+struct ibpc_type_stack {
+	struct ibpc_type_stack *prev;
+	struct ibpc_type_stack *next;
+	struct ibpc_value *data;
+};
+struct ibpc_type_queue {
+	struct ibpc_type_queue *prev;
+	struct ibpc_type_queue *next;
+	struct ibpc_value *data;
+};
+/*
+ * FIXME: there's definitely something wrong with those three types but my brain
+ * isn't clear enough to deal with types right now. I mean, the why am I
+ * defining queue types as queue items? And where's the producer/consumer
+ * pointers? (I don't think we need any thread safety though.)
+ */
+
+union ibpc_type {
+	ibpc_type_integer integer;
+	ibpc_type_real real;
+	struct ibpc_type_string string;
+	ibpc_type_boolean boolean;
+	ibpc_type_list list;
+	ibpc_type_stack stack;
+	ibpc_type_queue queue;
+};
+
+struct ibpc_value {
+	enum ibpc_type_id type;
+	union ibpc_type value;
+};
