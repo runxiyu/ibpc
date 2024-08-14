@@ -183,7 +183,7 @@ Parentheses `(` and `)` may be used to group an expression.
 ### Defining functions
 
 Functions are defined in the following form:
-```
+```ibpc
 func function_name(PARAM_0, PARAM_1, ..., PARAM_N)
 	...
 end function_name
