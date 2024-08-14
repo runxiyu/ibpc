@@ -18,7 +18,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <gmp.h>
+#include <sys/types.h>
 
 enum ibpc_type_id {
 	IBPC_TYPE_INTEGER,
@@ -28,8 +28,8 @@ enum ibpc_type_id {
 	IBPC_TYPE_LIST,
 };
 
-typedef mpz_t ibpc_type_integer;
-typedef mpq_t ibpc_type_real;
+typedef long long ibpc_type_integer;
+typedef double ibpc_type_real;
 struct ibpc_type_string {
 	ssize_t cap;
 	ssize_t size;
