@@ -3,6 +3,11 @@ title: Informal Pseudocode Specification
 toc: true
 ---
 
+<!--
+  -- Copyright (c) 2024 Runxi Yu
+  -- SPDX-License-Identifier: AGPL-3.0-or-later
+  -->
+
 The language we use is a variant of the [Donkey
 project](https://github.com/linxuanm/donkey)'s, which, in turn, is a
 well-defined subset of IB Pseudocode.
@@ -35,12 +40,13 @@ All variables *should* be capitalized, but this is not enforced.
 
 All simple types are passed by value (even strings).
 
-| Type    | Description             | Implementation                                | Literal form         |
-| ----    | -----------             | --------------                                | ------------         |
-| Integer | a whole number          | `long long`                                   | `-?[0-9]+` in base 10|
-| Real    | a floating point number | `double`                                      | `-?[0-9]+\.[0-9]+`   |
-| String  | an array of bytes       | a struct with a cap, a size, and `char *data` | `"[^"\n]*"`          |
-| Boolean | a boolean               | `bool`                                        | <code>(true&vert;false)</code> |
+| Type    | Description             | Implementation                                | Literal form                   |
+| ----    | -----------             | --------------                                | ------------                   |
+| Integer | A whole number          | `long long`                                   | `-?[0-9]+` in base 10          |
+| Real    | A floating point number | `double`                                      | `-?[0-9]+\.[0-9]+`             |
+| String  | An array of bytes       | a struct with a cap, a size, and `char *data` | `"[^"\n]*"`                    |
+| Boolean | A boolean               | `bool`                                        | <code>(true&vert;false)</code> |
+| Null    | No meaningful value     | `NULL`                                        | `null`                         |
 
 Note that:
 * There are limits to the size of integers and the precision of reals.
@@ -50,6 +56,7 @@ Note that:
   functions work. Patches welcome, though!
   * `long long` is `int64_t` on many systems.
   * `double` is IEEE 754 binary64 on virtually all systems.
+<!-- FIXME: Write about how NULL works -->
 
 ### Compound types
 
@@ -57,13 +64,13 @@ All compound types are passed by reference.
 
 | Type  | Description                                | Implementation        | Literal form                              |
 | ----  | -----------                                | --------------        | ------------                              |
-| List  | an ordered container for a group of values | a linked list         | `\[\v\s*(,\s*\v\s*)*\]` where `\v` is any value |
-| Stack | a FILO                                     |                       |                                           |
-| Queue | a FIFO                                     |                       |                                           |
+| List  | An ordered container for a group of values | a linked list         | `\[\v\s*(,\s*\v\s*)*\]` where `\v` is any value |
+| Stack | A FILO                                     |                       |                                           |
+| Queue | A FIFO                                     |                       |                                           |
 
 Stacks and queues are a distant target to implement.
 
-## Type conversion functions
+### Type conversion functions
 
 * **`int(X)`** converts `X` to an integer.
   * If `X` is a boolean, `0` or `1` is returned.
@@ -98,7 +105,9 @@ Stacks and queues are a distant target to implement.
     of the arguments to be converted to strings, concatenated, and written to
     standard output.
 
-## Arithmetic operations
+## Basic arithmetic and logic operations
+
+### Arithmetic operators
 
 * **`A + B`** evaluates to the sum of `A` and `B`, where `A` and `B` are
   integers or reals.
@@ -126,26 +135,137 @@ divisor is zero. (Generally speaking, they cause SIGFPE on amd64 and evaluate to
 change this. Divison by zero is not recommended as doing so might create
 [nasal demons](http://www.catb.org/jargon/html/N/nasal-demons.html).)
 
-## Comparison operators
+### Comparison operators
 
-All comparison operators evaluate to booleans.
+All comparison operators evaluate to booleans that describe whether the
+corresponding condition is true or false.
 
-| Form | Description |
-| -------- | ----------- |
-|`A == B`|A is equal to B|
-|`A != B`|A is not equal to B|
-|`A < B`|A is strictly less than B|
-|`A <= B`|A is less than or equal to B|
-|`A > B`|A is strictly greater than B|
-|`A >= B`|A is greater than or equal to B|
+|   Form   |          Description            |
+| -------- | ------------------------------- |
+| `A == B` | A is equal to B                 |
+| `A != B` | A is not equal to B             |
+| `A < B`  | A is strictly less than B       |
+| `A <= B` | A is less than or equal to B    |
+| `A > B`  | A is strictly greater than B    |
+| `A >= B` | A is greater than or equal to B |
 
 * `==` and `!=` work on simple types.
 * `<`, `<=`, `>`, and `>=` only work on integers and reals. Integers and reals
   may be compared with each other.
 
-## Operator precedence
+### Boolean logic operators
+
+| Form      | Description                                 |
+| --------  | ------------------------------------------- |
+| `A and B` | Both `A` and `B` are true                   |
+| `A or B`  | `A` and/or `B` is true                      |
+| `not X`   | X is not true                               |
+| `!X`      | Same as `not X`, but with higher precedence |
+
+### Operator precedence
+
+The smaller the list item index. the higher the precedence:
+
+1. `!`, `-` (negation)
+2. `*`, `div`, `mod`, `/`, `%`
+3. `+`, `-` (subtraction)
+4. `==`, `!=`, `>=`, `<=`, `>`, `<`
+5. `not`
+6. `and`
+7. `or`
+
+### Grouping
+
+Parentheses `(` and `)` may be used to group an expression.
+
+## Functions
+
+### Defining functions
+
+Functions are defined in the following form:
+```
+func function_name(PARAM_0, PARAM_1, ..., PARAM_N)
+	...
+end function_name
+```
+
+Note that in the original IB specifications, functions are defined without the
+`func` keyword. This is ambiguous, as there is no way to distinguish between
+function calls and function definitions, due to the lack of semicolons,
+curly braces, or meaningful whitespace. The `func` keyword used as a workaround.
+
+If a `return` keyword is encountered during the execution of the
+function, the function terminates, control is passed back to the caller, and the
+function evaluates to argument passed to `return`. A `return` statement is
+illegal outside functions. Having multiple arguments passed to it is also
+illegal.
+
+If the end of a function is reached without encountering a `return` statement,
+the function evaluates to `null`.
+
+### Invoking functions
+
+A function can be invokved as `function_name(PARAM_0, PARAM_1, ..., PARAM_N)`.
+
+If the parameters are function calls, they are evaluated sequentially, from the
+0th to the Nth parameter.
+
+<!-- TODO: Write about scoping -->
+
+## Control flows
+
+## Advanced topics
+
+### Memory management and garbage collection
+
+Memory is usually allocated automatically with `malloc()`. Stack variables are
+rarely used.
+
+Currently, `free()` is never called, and memory is always leaked. Inline C or
+inline assmely may be used to free memory when neccessary. The usual
+considerations in use-after-free and double-free apply; it is recommended to run
+with `MALLOC_OPTIONS` set to `CFGJUX` on OpenBSD; see
+[malloc(3)](https://man.openbsd.org/malloc.3).
+
+I might add a garbage collector in the future. I will not add automatic
+reference counting or borrow checking.
+
+<!-- TODO: Add a garbage collector -->
+
+### Interop with C and assembly
+
+Each line, where the first non-whitespace character sequence is `$`, is
+printed verbatim into the output C code, with everything up to and including the
+first `$` removed.
+
+<!-- TODO: See if this makes it possible to add headers -->
+
+Each line, where the first non-whitespace character sequence is `~`, is
+treated as inline assembly.
+
+All identifiers written in the pseudocode language may be accessed in C by
+prefixing them with `ibpc_`.
+
+The behavior of using threading, any form of async, signal handlers, or freeing
+memory, is undefined.
+
+### Security
+
+On OpenBSD, you should use inline C to invoke
+[pledge(2)](https://man.openbsd.org/pledge.2) and
+[unveil(2)](https://man.openbsd.org/unveil.2) to harden the program. The usual
+methods apply, such as:
+```c
+$#ifdef __OpenBSD__
+	$error = unveil("file_to_read.txt", "r");
+	$if (error) err(1, "unveil");
+	$error = unveil(NULL, NULL);
+	$if (error) err(1, "unveil");
+	$error = pledge("stdio", NULL);
+	$if (error) err(1, "pledge");
+$#endif
+```
 
 <!-- vim: tw=80 nowrap
-     Copyright (c) 2024 Runxi Yu
      Copyright (c) 2024 Runxi Yu
 -->
