@@ -214,6 +214,70 @@ If the parameters are function calls, they are evaluated sequentially, from the
 
 ## Control flows
 
+### If, else
+
+The `if` statement may be used to conditionally execute code based on a runtime
+boolean value.
+
+In the following example, `...` runs iff `CONDITIONAL_VALUE` is `true`.
+`CONDITIONAL_VALUE` must be a boolean.
+
+```ibpc
+if CONDITIONAL_VALUE then
+	...
+end if
+```
+
+An `else` branch may be added, where the contents are run iff
+`CONDITIONAL_VALUE` is `false`.
+
+```ibpc
+if CONDITIONAL_VALUE then
+	... // executed if true
+else
+	... // executed if false
+end if
+```
+
+Statements may be nested, and only one `end if` is needed:
+
+```ibpc
+if CONDITIONAL_VALUE then
+	...
+else if ANOTHER_CONDITION then
+	...
+else
+	...
+end if
+```
+
+The last `else` branch is optional.
+
+### Loop while, loop until
+
+The following causes CONDITION to be evaluated. If it is true, the body of the
+loop `...` is executed. If it is false, the loop is skipped. If the loop is
+being executed and the end of the loop content has been reached, the condition
+is checked again and the loop repeats if the condition is true.
+
+```ibpc
+loop while CONDITION
+	...
+end loop
+```
+
+This is equivalent to
+
+```c
+begin_loop:
+if (!CONDITION) {
+	goto end_loop;
+}
+...
+goto begin_loop;
+end_loop:
+```
+
 ## Advanced topics
 
 ### Memory management and garbage collection
@@ -222,7 +286,7 @@ Memory is usually allocated automatically with `malloc()`. Stack variables are
 rarely used.
 
 Currently, `free()` is never called, and memory is always leaked. Inline C or
-inline assmely may be used to free memory when neccessary. The usual
+inline assmely may be used to free memory when necessary. The usual
 considerations in use-after-free and double-free apply; it is recommended to run
 with `MALLOC_OPTIONS` set to `CFGJUX` on OpenBSD; see
 [malloc(3)](https://man.openbsd.org/malloc.3).
