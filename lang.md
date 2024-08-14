@@ -253,7 +253,7 @@ end if
 
 The last `else` branch is optional.
 
-### Loop while, loop until
+### Loop while
 
 The following causes CONDITION to be evaluated. If it is true, the body of the
 loop `...` is executed. If it is false, the loop is skipped. If the loop is
@@ -266,17 +266,68 @@ loop while CONDITION
 end loop
 ```
 
-This is equivalent to
+When written in `goto`s in C:
 
 ```c
 begin_loop:
-if (!CONDITION) {
+if (!CONDITION)
 	goto end_loop;
-}
 ...
 goto begin_loop;
 end_loop:
 ```
+
+### Loop until
+
+The following causes CONDITION to be evaluated. If it is false, the body of the
+loop `...` is executed. If it is true, the loop is skipped. If the loop is
+being executed and the end of the loop content has been reached, the condition
+is checked again and the loop repeats if the condition is false.
+
+```ibpc
+loop until CONDITION
+	...
+end loop
+```
+
+This is equivalent to:
+```ibpc
+loop while (!CONDITION)
+	...
+end loop
+```
+
+### For
+
+The IB Pseudocode `for` loop can only loop a variable from one value to another,
+with 1 as the step. Both the beginning and the end are inclusive.
+
+```ibpc
+loop I from BEGINNING to END
+	...
+end loop
+```
+
+This is equivalent to the following C:
+```c
+for (long long I = BEGINNING; I < END + 1; ++i) {
+	...
+}
+```
+
+### Break
+
+The `break` statement causes the inner-most loop to exit immediately, skipping
+the rest of the current iteration and all further iterations (that is, unless if
+the loop itself is entered again).
+
+The `continue` statement jumps to the end of the current iteration.
+
+These statements work on both `while` and `for` loops.
+
+## Using compound data types
+
+<!-- TODO -->
 
 ## Advanced topics
 
