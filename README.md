@@ -1,5 +1,7 @@
 # IBDP Computer Science Pseudocode Utilities
 
+[Documentation](https://man.sr.ht/~runxiyu/ibpc)
+
 There is nothing real here yet, since the school year hasn't even started. You
 could expect this repository to be populated within the next one or two years.
 
