@@ -100,10 +100,10 @@ Stacks and queues are a distant target to implement.
   defined.
 * **`output`** could take one or more arguments:
   * **`output X`** causes X to be converted to a string and written to standard
-    output.
+    output, followed by a line feed.
   * **`output \v\s*(,\s*\v\s*)*`**, where `\v` represents any value, causes all
     of the arguments to be converted to strings, concatenated, and written to
-    standard output.
+    standard output, followed by a line feed.
 
 ## Basic arithmetic and logic operations
 
