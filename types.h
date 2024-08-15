@@ -19,6 +19,7 @@
  */
 
 #include <sys/types.h>
+#include <stdbool.h>
 
 enum ibpc_type_id {
 	IBPC_TYPE_INTEGER,
@@ -36,18 +37,18 @@ struct ibpc_type_string {
 	char *data;
 };
 typedef bool ibpc_type_boolean;
-struct ibpc_type_list {
-	struct ibpc_type_list *prev;
-	struct ibpc_type_list *next;
-	struct ibpc_value *data;
-}; // FIXME
+// struct ibpc_type_list {
+// 	struct ibpc_type_list *prev;
+// 	struct ibpc_type_list *next;
+// 	struct ibpc_value *data;
+// }; // FIXME
 
 union ibpc_type {
 	ibpc_type_integer integer;
 	ibpc_type_real real;
 	struct ibpc_type_string string;
 	ibpc_type_boolean boolean;
-	ibpc_type_list list;
+	// ibpc_type_list list;
 };
 
 struct ibpc_value {
