@@ -14,16 +14,14 @@ IB Pseudocode compiler and debugging environment, but modern Web technology is
 inaccessible in my usual workflow. Therefore, I've set out to create a
 pseudocode compiler with much simpler technology, namely:
 
-* [POSIX lex](https://pubs.opengroup.org/onlinepubs/9799919799/utilities/lex.html)
-  for lexing.
-* [POSIX yacc](https://pubs.opengroup.org/onlinepubs/9799919799/utilities/yacc.html)
-  for parsing.
-* Transpile to or POSIX-compliant C.
-  a rush, [Lua](https://lua.org) or [CHICKEN Scheme](https://www.call-cc.org/))
+* Use [lex](https://pubs.opengroup.org/onlinepubs/9799919799/utilities/lex.html)
+  [yacc](https://pubs.opengroup.org/onlinepubs/9799919799/utilities/yacc.html),
+  or another means of parsing that's similarly simple.
+* Transpile to POSIX-compliant C, or Lua.
 * ~~Preferrably, the ability to use standard debugging environments like
   [GDB](https://sourceware.org/gdb/) and [rr](https://rr-project.org/)~~   
-  This is likely impossible as I'm transpiling to C rather than to QBE/LLVM IL.
-  Some debugging primitives must then be added, such as the ability to print
+  This is likely impossible as I'm transpiling rather than using QBE/LLVM IL.
+  Some debugging utilities must then be added, such as the ability to print
   every line of code as they are executed.
 * It should be able to run on musl Linux, glibc Linux, OpenBSD, and FreeBSD.
   macOS does not implement POSIX.1-2007 or later, but it should not be that hard
