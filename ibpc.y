@@ -22,9 +22,13 @@
 #include "types.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <stdarg.h>
 
 extern int yylex();
 void yyerror(const char *s);
+void emit(const char *fmt, ...);
+
 %}
 
 %union {
@@ -46,6 +50,8 @@ void yyerror(const char *s);
 %left TIMES DIV INTEGER_DIV MOD MOD_OP
 %right NOT_OP
 
+%type <string> expression assignment_statement if_statement loop_statement statement_list io_statement function_definition parameter_list statement
+
 %%
 
 program:
@@ -54,85 +60,178 @@ program:
 	;
 
 statement:
-	expression NEWLINE
-	| assignment NEWLINE
-	| control_flow NEWLINE
-	| io_statement NEWLINE
+	expression_statement
+	| assignment_statement
+	| control_flow_statement
+	| io_statement
 	| function_definition
 	;
 
-assignment:
-	IDENTIFIER ASSIGN expression
+expression_statement:
+	expression NEWLINE { }
+	;
+
+assignment_statement:
+	IDENTIFIER ASSIGN expression NEWLINE {
+		emit("%s = %s;\n", $1, $3);
+		free($1);
+		free($3);
+	}
 	;
 
 expression:
-	INTEGER_LIT
-	| REAL_LIT
-	| STRING_LIT
-	| TRUE
-	| FALSE
-	| NULL_LIT
-	| IDENTIFIER
-	| expression PLUS expression
-	| expression MINUS expression
-	| expression TIMES expression
-	| expression DIV expression
-	| expression INTEGER_DIV expression
-	| expression MOD expression
-	| expression MOD_OP expression
-	| expression EQ expression
-	| expression NEQ expression
-	| expression LT expression
-	| expression LEQ expression
-	| expression GT expression
-	| expression GEQ expression
-	| expression AND expression
-	| expression OR expression
-	| NOT_OP expression
-	| LPAREN expression RPAREN
+	INTEGER_LIT {
+		char buffer[32];
+		snprintf(buffer, sizeof(buffer), "%lld", $1);
+		$$ = strdup(buffer);
+	}
+	| REAL_LIT {
+		char buffer[32];
+		snprintf(buffer, sizeof(buffer), "%lf", $1);
+		$$ = strdup(buffer);
+	}
+	| STRING_LIT {
+		$$ = strdup($1);
+		free($1);
+	}
+	| TRUE {
+		$$ = strdup("1");
+	}
+	| FALSE {
+		$$ = strdup("0");
+	}
+	| NULL_LIT {
+		$$ = strdup("NULL");
+	}
+	| IDENTIFIER {
+		$$ = strdup($1);
+	}
+	| expression PLUS expression {
+		asprintf(&$$, "%s + %s", $1, $3);
+		free($1);
+		free($3);
+	}
+	| expression MINUS expression {
+		asprintf(&$$, "%s - %s", $1, $3);
+		free($1);
+		free($3);
+	}
+	| expression TIMES expression {
+		asprintf(&$$, "%s * %s", $1, $3);
+		free($1);
+		free($3);
+	}
+	| expression DIV expression {
+		asprintf(&$$, "%s / %s", $1, $3);
+		free($1);
+		free($3);
+	}
+	| LPAREN expression RPAREN {
+		asprintf(&$$, "(%s)", $2);
+		free($2);
+	}
 	;
 
-control_flow:
+control_flow_statement:
 	if_statement
 	| loop_statement
 	;
 
 if_statement:
-	IF expression THEN statement_list END IF
-	| IF expression THEN statement_list ELSE statement_list END IF
+	IF expression THEN statement_list END IF {
+		emit("if (%s) {\n%s}\n", $2, $4);
+		free($2);
+		free($4);
+	}
+	| IF expression THEN statement_list ELSE statement_list END IF {
+		emit("if (%s) {\n%s} else {\n%s}\n", $2, $4, $6);
+		free($2);
+		free($4);
+		free($6);
+	}
 	;
 
 loop_statement:
-	LOOP WHILE expression statement_list END LOOP
-	| LOOP UNTIL expression statement_list END LOOP
-	| LOOP IDENTIFIER FROM expression TO expression statement_list END LOOP
+	LOOP WHILE expression statement_list END LOOP {
+		emit("while (%s) {\n%s}\n", $3, $4);
+		free($3);
+		free($4);
+	}
+	| LOOP UNTIL expression statement_list END LOOP {
+		emit("while (!(%s)) {\n%s}\n", $3, $4);
+		free($3);
+		free($4);
+	}
+	| LOOP IDENTIFIER FROM expression TO expression statement_list END LOOP {
+		emit("for (long long %s = %s; %s <= %s; ++%s) {\n%s}\n",
+			 $2, $4, $2, $6, $2, $7);
+		free($2);
+		free($4);
+		free($6);
+		free($7);
+	}
 	;
 
 statement_list:
-	statement_list statement
-	| statement
+	statement_list statement {
+		asprintf(&$$, "%s%s", $1, $2);
+		free($1);
+		free($2);
+	}
+	| statement {
+		$$ = strdup($1);
+		free($1);
+	}
 	;
 
 io_statement:
-	INPUT IDENTIFIER
-	| OUTPUT expression
+	INPUT IDENTIFIER NEWLINE {
+		emit("char buffer[1024];\nfgets(buffer, sizeof(buffer), stdin);\n%s = strdup(buffer);\n", $2);
+		free($2);
+	}
+	| OUTPUT expression NEWLINE {
+		emit("printf(\"%%s\", %s);\n", $2);
+		free($2);
+	}
 	;
 
 function_definition:
-	FUNC IDENTIFIER LPAREN parameter_list RPAREN statement_list END IDENTIFIER
+	FUNC IDENTIFIER LPAREN parameter_list RPAREN statement_list END IDENTIFIER {
+		emit("void %s(%s) {\n%s}\n", $2, $4, $6);
+		free($2);
+		free($4);
+		free($6);
+	}
 	;
 
 parameter_list:
-	IDENTIFIER
-	| parameter_list COMMA IDENTIFIER
+	IDENTIFIER {
+		$$ = strdup($1);
+	}
+	| parameter_list COMMA IDENTIFIER {
+		asprintf(&$$, "%s, %s", $1, $3);
+		free($1);
+		free($3);
+	}
 	;
 
 %%
 
 void yyerror(const char *s) {
-	fprintf(stderr, "%s\n", s);
+	fprintf(stderr, "Error: %s\n", s);
+}
+
+void emit(const char *fmt, ...) {
+	va_list args;
+	va_start(args, fmt);
+	vprintf(fmt, args);
+	va_end(args);
 }
 
 int main(int argc, char **argv) {
-	return yyparse();
+
+	printf("#include <stdio.h>\n#include <stdlib.h>\n#include \"types.h\"\n\n");
+	yyparse();
+	
+	return 0;
 }
