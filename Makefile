@@ -1,5 +1,8 @@
+CC = gcc
+CFLAGS += -Wall -Wextra -pedantic
+
 ibpc: lex.yy.c y.tab.c
-	gcc lex.yy.c y.tab.c -o ibpc -ll -ly
+	$(CC) $(CFLAGS) lex.yy.c y.tab.c -o ibpc
 
 lex.yy.c: ibpc.l
 	lex ibpc.l
