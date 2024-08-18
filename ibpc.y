@@ -19,7 +19,7 @@
  */
 
 %{
-#include "types.h"
+#include "ibpctypes.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -230,7 +230,7 @@ void emit(const char *fmt, ...) {
 
 int main(int argc, char **argv) {
 
-	printf("#include <stdio.h>\n#include <stdlib.h>\n#include \"types.h\"\n\n");
+	printf("#include <stdio.h>\n#include <stdlib.h>\n#include \"ibpctypes.h\"\n\n");
 	yyparse();
 	
 	return 0;

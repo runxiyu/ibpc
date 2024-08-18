@@ -30,7 +30,7 @@ well-defined subset of IB Pseudocode.
 ## Data representation and types
 
 Since IB Pseudocode is dynamically typed, all values are basically a tagged
-union. See `types.h` for details.
+union. See `ibpctypes.h` for details.
 
 Variables are not declared; they are automatically "declared" when assigned to.
 
